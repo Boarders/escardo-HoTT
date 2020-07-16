@@ -38,4 +38,22 @@ is-empty X = X → Zero
 ¬ : El U → El U
 ¬ = is-empty
 
+data ℕ : El U₀ where
+  zero : ℕ
+  succ : ℕ → ℕ
+
+{-# BUILTIN NATURAL ℕ #-}
+
+ℕ-ind : (P : ℕ → El U) → P 0 → ((n : ℕ) → P n → P (succ n)) → ((n : ℕ) → P n)
+ℕ-ind P z s zero = z
+ℕ-ind P z s (succ n) = s n (ℕ-ind P z s n)
+
+
+ℕ-rec : (X : El U) → X → (ℕ → X → X) → (ℕ → X)
+ℕ-rec X x sx n = ℕ-ind (λ _ → X) x sx n
+
+ℕ-iter : (X : El U) → X → (X → X) → ℕ → X
+ℕ-iter X x sx n = ℕ-rec X x (λ _ → sx) n
+
+
 
