@@ -79,3 +79,37 @@ module ℕ-order where
 -- exercise
 -- x ≤ y if and only if Σ z ꞉ ℕ , x + z ≡ y.
 -- (x ≤ y) ≡ Σ z ꞉ ℕ , x + z ≡ y.
+
+data _+_ {U V} (X : El U) (Y : El V) : El (U ⊔ V) where
+  inl : X → X + Y
+  inr : Y → X + Y
+
++-ind 
+  : {X : El U} {Y : El V} (P : X + Y → El W)
+  → ((x : X) → P (inl x))
+  → ((y : Y) → P (inr y))
+  → ((z : X + Y) → P z)
++-ind P inlP inrP (inl x) = inlP x
++-ind P inlP inrP (inr x) = inrP x
+
++-rec
+  : {X : El U} {Y : El V} (Z : El W)
+  → ((x : X) → Z)
+  → ((y : Y) → Z)
+  → ((z : X + Y) → Z)
++-rec Z inlZ inrZ z = +-ind (λ _ → Z) inlZ inrZ z
+
+bool : El U₀
+bool = One + One
+
+pattern tt = inl ⋆
+pattern ff = inr ⋆
+
+bool-ind : (P : bool → El U) → P tt → P ff → ((b : bool) → P b)
+bool-ind P then else = 
+  +-ind 
+    P 
+    (one-ind (λ x → P (inl x)) then) 
+    (one-ind (λ x → P (inr x)) else)
+
+
