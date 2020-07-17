@@ -55,5 +55,27 @@ data ℕ : El U₀ where
 ℕ-iter : (X : El U) → X → (X → X) → ℕ → X
 ℕ-iter X x sx n = ℕ-rec X x (λ _ → sx) n
 
+module Arithmetic where
+  _+_ _×_ : ℕ → ℕ → ℕ
+
+  x + y = ℕ-iter ℕ x succ y
+  x × y = ℕ-iter ℕ 0 (x +_) y
+
+  infixl 20 _+_
+  infixl 21 _×_
+
+module ℕ-order where
+  _≤_ _≥_ : ℕ → ℕ → El U₀
+  _≤_ = ℕ-iter
+          (ℕ → El U₀)
+          (λ _ → One)
+          λ n≤ sm → ℕ-rec (El U₀) Zero (λ m _ → n≤ m) sm
 
 
+  x ≥ y = y ≤ x
+  infix 10 _≤_
+  infix 10 _≥_
+
+-- exercise
+-- x ≤ y if and only if Σ z ꞉ ℕ , x + z ≡ y.
+-- (x ≤ y) ≡ Σ z ꞉ ℕ , x + z ≡ y.
